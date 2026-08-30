@@ -18,7 +18,7 @@ export default function Home() {
 
   return (
     <div>
-      <section className="bg-gradient-to-b from-[#f5f5f7] to-white">
+      <section className="bg-gradient-to-b from-[#f5f5f7] to-white ">
         <div className="mx-auto max-w-page px-5 py-20 text-center">
           <h1 className="text-4xl font-semibold tracking-tight text-ink md:text-6xl">
             iPhone 17 Pro

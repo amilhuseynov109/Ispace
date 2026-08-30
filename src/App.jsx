@@ -10,7 +10,7 @@ import ContactPage from "./pages/ContactPage";
 
 export default function App() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col p-2 md:p-0">
       <Header />
       <main className="flex-1">
         <Routes>
