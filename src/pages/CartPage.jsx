@@ -62,7 +62,6 @@ export default function CartPage() {
       <h1 className="mb-8 text-3xl font-semibold text-ink">Your basket</h1>
 
       <div className="grid gap-10 lg:grid-cols-3">
-        {/* Список товаров */}
         <div className="lg:col-span-2">
           <ul className="divide-y divide-black/5 rounded-2xl border border-black/5 bg-white">
             {items.map((item) => (
@@ -70,7 +69,6 @@ export default function CartPage() {
                 key={item.key}
                 className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between"
               >
-                {/* Левая часть: Картинка и описание */}
                 <div className="flex items-center gap-4">
                   <img
                     src={deviceImage(item, item.color, 120)}
@@ -93,9 +91,7 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                {/* Правая часть: Кнопки количество, итоговая цена и кнопка удаления */}
                 <div className="flex items-center justify-between gap-3 border-t border-black/5 pt-3 sm:border-t-0 sm:pt-0 sm:justify-end">
-                  {/* Кнопки переключения количества */}
                   <div className="flex items-center rounded-full border border-black/15">
                     <button
                       onClick={() => updateQuantity(item.key, item.quantity - 1)}
@@ -116,7 +112,6 @@ export default function CartPage() {
                     </button>
                   </div>
 
-                  {/* Итоговая цена элемента и удаление */}
                   <div className="flex items-center gap-4">
                     <span className="font-semibold text-ink sm:w-24 sm:text-right">
                       {formatPrice(item.price * item.quantity)}
@@ -143,7 +138,6 @@ export default function CartPage() {
           </button>
         </div>
 
-        {/* Чек / Блок заказа */}
         <div className="h-fit rounded-2xl border border-black/5 bg-[#f5f5f7] p-6">
           <h2 className="mb-4 text-lg font-semibold text-ink">
             Order summary
