@@ -32,7 +32,7 @@ export function getProducts({ category, search } = {}) {
 
 export function getProductBySlug(slug) {
   const product = products.find((p) => p.slug === slug);
-  return delay(product ?? null);
+  return delay(product || null);
 }
 
 export function getFeaturedProducts() {

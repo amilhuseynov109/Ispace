@@ -297,26 +297,36 @@ function resolveModel(category, name) {
 }
 
 let idCounter = 1;
-export const products = Object.entries(catalogue).flatMap(([category, items]) => {
-  const base = defaults[category];
-  const emoji = categories.find((c) => c.id === category)?.emoji ?? "📦";
-  return items.map(([name, price, oldPrice, badge]) => {
+
+export const products = [];
+
+for (const category in catalogue) {
+  const items = catalogue[category]; 
+  const base = defaults[category]; 
+  
+  const categoryInfo = categories.find((c) => c.id === category);
+  const emoji = categoryInfo ? categoryInfo.emoji : "📦";
+
+  for (const item of items) {
+    const [name, price, oldPrice, badge] = item;
     const { imageKey, colors } = resolveModel(category, name);
-    return {
+
+    products.push({
       id: idCounter++,
       slug: slugify(name),
-      name,
-      category,
-      imageKey,
-      price,
-      oldPrice: oldPrice ?? undefined,
-      badge: badge ?? undefined,
-      emoji,
+      name: name,
+      category: category,
+      imageKey: imageKey,
+      price: price,
+      oldPrice: oldPrice || undefined,
+      badge: badge || undefined,
+      emoji: emoji,
       tagline: base.tagline,
-      colors,
+      colors: colors,
       description: base.description,
       specs: base.specs,
       storageOptions: STORAGE[category],
-    };
-  });
-});
+    });
+  }
+}
+

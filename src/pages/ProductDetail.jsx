@@ -9,6 +9,7 @@ import Loader from "../components/Loader";
 export default function ProductDetail() {
   const { slug } = useParams();
   const { addItem } = useCart();
+  
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState(null);
@@ -20,8 +21,19 @@ export default function ProductDetail() {
     setLoading(true);
     getProductBySlug(slug).then((data) => {
       setProduct(data);
-      setSelectedColor(data?.colors?.[0] ?? null);
-      setSelectedStorage(data?.storageOptions?.[0] ?? null);
+      
+      if (data && data.colors && data.colors.length > 0) {
+        setSelectedColor(data.colors[0]);
+      } else {
+        setSelectedColor(null);
+      }
+
+      if (data && data.storageOptions && data.storageOptions.length > 0) {
+        setSelectedStorage(data.storageOptions[0]);
+      } else {
+        setSelectedStorage(null);
+      }
+
       setQuantity(1);
       setLoading(false);
     });
@@ -40,21 +52,25 @@ export default function ProductDetail() {
     );
   }
 
-  const price = product.price + (selectedStorage?.add ?? 0);
-  const oldPrice = product.oldPrice
-    ? product.oldPrice + (selectedStorage?.add ?? 0)
-    : undefined;
+  const storageAddPrice = selectedStorage ? selectedStorage.add : 0;
+  const price = product.price + storageAddPrice;
+  const oldPrice = product.oldPrice ? product.oldPrice + storageAddPrice : undefined;
   const discount = discountPercent(price, oldPrice);
 
   function handleAdd() {
+    const storageLabel = selectedStorage ? selectedStorage.label : null;
+
     addItem(product, {
-      quantity,
+      quantity: quantity,
       color: selectedColor,
-      storage: selectedStorage?.label ?? null,
-      price,
+      storage: storageLabel,
+      price: price,
     });
+
     setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
+    setTimeout(() => {
+      setAdded(false);
+    }, 1500);
   }
 
   return (
@@ -114,7 +130,7 @@ export default function ProductDetail() {
 
           <p className="mt-5 text-ink/80">{product.description}</p>
 
-          {product.colors?.length > 0 && (
+          {product.colors && product.colors.length > 0 && (
             <div className="mt-6">
               <p className="mb-2 text-sm font-medium text-ink">
                 Color: <span className="text-subtle">{selectedColor}</span>
@@ -138,11 +154,13 @@ export default function ProductDetail() {
             </div>
           )}
 
-          {product.storageOptions?.length > 0 && (
+          {product.storageOptions && product.storageOptions.length > 0 && (
             <div className="mt-6">
               <p className="mb-2 text-sm font-medium text-ink">
                 Storage:{" "}
-                <span className="text-subtle">{selectedStorage?.label}</span>
+                <span className="text-subtle">
+                  {selectedStorage ? selectedStorage.label : ""}
+                </span>
               </p>
               <div className="flex flex-wrap gap-2">
                 {product.storageOptions.map((option) => (
@@ -150,7 +168,7 @@ export default function ProductDetail() {
                     key={option.label}
                     onClick={() => setSelectedStorage(option)}
                     className={`rounded-xl border px-4 py-2 text-sm transition ${
-                      selectedStorage?.label === option.label
+                      selectedStorage && selectedStorage.label === option.label
                         ? "border-brand bg-brand/5 text-brand"
                         : "border-black/15 text-ink hover:border-black/40"
                     }`}
@@ -190,7 +208,6 @@ export default function ProductDetail() {
               {added ? "Added to basket ✓" : "Add to basket"}
             </button>
           </div>
-
           <div className="mt-8">
             <h2 className="mb-3 text-lg font-semibold text-ink">
               Specifications

@@ -149,80 +149,9 @@ export function hexFor(colorName) {
   return COLOR_HEX[colorName] || "#9aa0a6";
 }
 
-function shade(hex, amount) {
-  const n = parseInt(hex.slice(1), 16);
-  const r = Math.max(0, ((n >> 16) & 255) * (1 - amount));
-  const g = Math.max(0, ((n >> 8) & 255) * (1 - amount));
-  const b = Math.max(0, (n & 255) * (1 - amount));
-  return `rgb(${r | 0},${g | 0},${b | 0})`;
-}
-
-function device(category, color) {
-  const dark = shade(color, 0.25);
-  const screen = "#ffffff";
-
-  switch (category) {
-    case "iphone":
-      return `
-        <rect x="36" y="14" width="28" height="72" rx="7" fill="${color}" stroke="${dark}" stroke-width="0.8"/>
-        <rect x="38.5" y="17" width="23" height="66" rx="4.5" fill="${screen}"/>
-        <rect x="45" y="17.5" width="10" height="2.6" rx="1.3" fill="${color}"/>
-        <circle cx="58" cy="26" r="1.6" fill="${dark}"/>`;
-    case "ipad":
-      return `
-        <rect x="26" y="14" width="48" height="72" rx="5" fill="${color}" stroke="${dark}" stroke-width="0.8"/>
-        <rect x="29" y="17" width="42" height="66" rx="2.5" fill="${screen}"/>
-        <circle cx="70.5" cy="20.5" r="1.3" fill="${dark}"/>`;
-    case "mac":
-      return `
-        <rect x="24" y="24" width="52" height="34" rx="2.2" fill="${color}" stroke="${dark}" stroke-width="0.8"/>
-        <rect x="26.5" y="26.5" width="47" height="29" rx="1.2" fill="${screen}"/>
-        <polygon points="18,58 82,58 88,66 12,66" fill="${shade(color, 0.1)}" stroke="${dark}" stroke-width="0.6"/>
-        <rect x="42" y="58" width="16" height="2.4" rx="1.2" fill="${dark}"/>`;
-    case "watch":
-      return `
-        <rect x="42" y="14" width="16" height="16" rx="4" fill="${dark}"/>
-        <rect x="42" y="70" width="16" height="16" rx="4" fill="${dark}"/>
-        <rect x="37" y="30" width="26" height="40" rx="9" fill="${color}" stroke="${dark}" stroke-width="0.8"/>
-        <rect x="40" y="34" width="20" height="32" rx="6" fill="${screen}"/>`;
-    case "airpods":
-      return `
-        <rect x="41" y="40" width="18" height="26" rx="6" fill="${color}" stroke="${dark}" stroke-width="0.8"/>
-        <circle cx="46" cy="36" r="4.5" fill="${color}" stroke="${dark}" stroke-width="0.6"/>
-        <rect x="44.5" y="36" width="3" height="12" rx="1.5" fill="${color}" stroke="${dark}" stroke-width="0.4"/>
-        <circle cx="54" cy="36" r="4.5" fill="${color}" stroke="${dark}" stroke-width="0.6"/>
-        <rect x="52.5" y="36" width="3" height="12" rx="1.5" fill="${color}" stroke="${dark}" stroke-width="0.4"/>`;
-    case "tv-home":
-      return `
-        <rect x="22" y="24" width="56" height="36" rx="3" fill="${color}" stroke="${dark}" stroke-width="0.8"/>
-        <rect x="25" y="27" width="50" height="30" rx="1.5" fill="${screen}"/>
-        <rect x="44" y="60" width="12" height="10" fill="${shade(color, 0.1)}"/>
-        <rect x="34" y="70" width="32" height="3" rx="1.5" fill="${dark}"/>`;
-    default:
-      return `
-        <rect x="32" y="32" width="36" height="36" rx="9" fill="${color}" stroke="${dark}" stroke-width="0.8"/>
-        <circle cx="50" cy="50" r="7" fill="${screen}"/>`;
-  }
-}
-
-function svgFallback(category, colorName, size) {
-  const color = hexFor(colorName);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100">
-    <defs>
-      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#f5f5f7"/>
-        <stop offset="100%" stop-color="#e8e8ed"/>
-      </linearGradient>
-    </defs>
-    <rect width="100" height="100" fill="url(#bg)"/>
-    ${device(category, color)}
-  </svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-}
-
-export function deviceImage(product, colorName, size = 480) {
+export function deviceImage(product, colorName) {
   if (typeof product === "string") {
-    return CATEGORY_PHOTO[product] || svgFallback(product, colorName, size);
+    return CATEGORY_PHOTO[product] || "";
   }
 
   const { imageKey, category } = product ?? {};
@@ -240,5 +169,5 @@ export function deviceImage(product, colorName, size = 480) {
     return CATEGORY_PHOTO[category];
   }
 
-  return svgFallback(category, colorName, size);
+  return "";
 }

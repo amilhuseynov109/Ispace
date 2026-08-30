@@ -129,7 +129,6 @@ export default function CartPage() {
           </button>
         </div>
 
-        {/* Summary */}
         <div className="h-fit rounded-2xl border border-black/5 bg-[#f5f5f7] p-6">
           <h2 className="mb-4 text-lg font-semibold text-ink">
             Order summary

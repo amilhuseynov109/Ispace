@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { products } from "../data/products";
 import { formatPrice } from "../utils/format";
@@ -10,7 +10,6 @@ export default function SearchBox() {
   const navigate = useNavigate();
   const boxRef = useRef(null);
 
-
   useEffect(() => {
     function onClickOutside(e) {
       if (boxRef.current && !boxRef.current.contains(e.target)) {
@@ -21,25 +20,27 @@ export default function SearchBox() {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  const matches = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q),
-    );
-  }, [query]);
+  const cleanQuery = query.trim().toLowerCase();
+
+  let matches = [];
+  
+  if (cleanQuery.length > 0) {
+    matches = products.filter((p) => {
+      const matchName = p.name.toLowerCase().includes(cleanQuery);
+      const matchCategory = p.category.toLowerCase().includes(cleanQuery);
+      
+      return matchName || matchCategory;
+    });
+  }
 
   const suggestions = matches.slice(0, 5);
   const productResults = matches.slice(0, 4);
-  const showDropdown = open && query.trim().length > 0;
+  const showDropdown = open && cleanQuery.length > 0;
 
   function goToSearch() {
-    const q = query.trim();
-    if (!q) return;
+    if (!cleanQuery) return;
     setOpen(false);
-    navigate(`/search?q=${encodeURIComponent(q)}`);
+    navigate(`/search?q=${encodeURIComponent(cleanQuery)}`);
   }
 
   function goToProduct(slug) {
@@ -65,7 +66,6 @@ export default function SearchBox() {
           }}
           onFocus={() => setOpen(true)}
           placeholder="MacBook Neo from 1 499 ₼"
-          aria-label="Search products"
           className="w-full rounded-full border border-black/10 bg-[#f5f5f7] py-2 pl-10 pr-4 text-sm outline-none focus:border-brand focus:bg-white"
         />
         <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-subtle">
@@ -75,13 +75,15 @@ export default function SearchBox() {
 
       {showDropdown && (
         <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-black/10 bg-white text-left shadow-xl">
-          {matches.length === 0 ? (
+          
+          {matches.length === 0 && (
             <p className="px-4 py-6 text-center text-sm text-subtle">
               No products found for “{query}”.
             </p>
-          ) : (
-            <>
+          )}
 
+          {matches.length > 0 && (
+            <>
               <div className="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-subtle">
                 Suggestions
               </div>
@@ -103,36 +105,38 @@ export default function SearchBox() {
                 ))}
               </ul>
 
-            
               <div className="border-t border-black/5 px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-subtle">
                 Products
               </div>
               <ul className="pb-2">
-                {productResults.map((p) => (
-                  <li key={`p-${p.id}`}>
-                    <button
-                      onClick={() => goToProduct(p.slug)}
-                      className="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-black/5"
-                    >
-                      <img
-                        src={deviceImage(p, p.colors?.[0], 96)}
-                        alt={p.name}
-                        className="h-10 w-10 rounded-lg bg-[#f5f5f7] object-contain"
-                      />
-                      <span className="flex-1">
-                        <span className="block text-sm font-medium text-ink">
-                          {p.name}
+                {productResults.map((p) => {
+                  const firstColor = p.colors && p.colors.length > 0 ? p.colors[0] : null;
+
+                  return (
+                    <li key={`p-${p.id}`}>
+                      <button
+                        onClick={() => goToProduct(p.slug)}
+                        className="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-black/5"
+                      >
+                        <img
+                          src={deviceImage(p, firstColor, 96)}
+                          alt={p.name}
+                          className="h-10 w-10 rounded-lg bg-[#f5f5f7] object-contain"
+                        />
+                        <span className="flex-1">
+                          <span className="block text-sm font-medium text-ink">
+                            {p.name}
+                          </span>
+                          <span className="block text-sm font-semibold text-green-600">
+                            {formatPrice(p.price)}
+                          </span>
                         </span>
-                        <span className="block text-sm font-semibold text-green-600">
-                          {formatPrice(p.price)}
-                        </span>
-                      </span>
-                    </button>
-                  </li>
-                ))}
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
 
-           
               <button
                 onClick={goToSearch}
                 className="w-full border-t border-black/5 px-4 py-3 text-center text-sm font-semibold uppercase tracking-wide text-subtle hover:bg-black/5"
