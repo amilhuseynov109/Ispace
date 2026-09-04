@@ -54,7 +54,13 @@ export default function Home() {
               to={`/category/${cat.id}`}
               className="flex flex-col items-center gap-2 rounded-2xl border border-black/5 bg-white p-5 text-center transition hover:shadow-md"
             >
-              <span className="text-3xl">{cat.emoji}</span>
+              <span className="flex h-12 w-12 items-center justify-center">
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className="h-full w-full object-contain"
+                />
+              </span>
               <span className="text-sm font-medium text-ink">{cat.name}</span>
             </Link>
           ))}

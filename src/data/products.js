@@ -1,11 +1,20 @@
+import macImg from "../assets/products/imac-blue.png";
+import ipdImg from "../assets/products/ipadmini-blue.png";
+import iphImg from "../assets/products/17-sage.png";
+import wthImg from "../assets/products/watch-ultra.png";
+import airImg from "../assets/products/airpodsmax.png";
+import tvImg from "../assets/products/tv-home.png";
+import accImg from "../assets/products/airtag.png";
+
+
 export const categories = [
-  { id: "mac", name: "Mac", emoji: "💻" },
-  { id: "ipad", name: "iPad", emoji: "📱" },
-  { id: "iphone", name: "iPhone", emoji: "📱" },
-  { id: "watch", name: "Watch", emoji: "⌚" },
-  { id: "airpods", name: "AirPods", emoji: "🎧" },
-  { id: "tv-home", name: "TV & Home", emoji: "📺" },
-  { id: "accessories", name: "Accessories", emoji: "🔌" },
+  { id: "mac", name: "Mac", image: macImg },
+  { id: "ipad", name: "iPad", image: ipdImg },
+  { id: "iphone", name: "iPhone", image: iphImg },
+  { id: "watch", name: "Watch", image: wthImg  },
+  { id: "airpods", name: "AirPods", image: airImg },
+  { id: "tv-home", name: "TV & Home", image: tvImg },
+  { id: "accessories", name: "Accessories", image: accImg },
 ];
 
 const defaults = {
