@@ -1,40 +1,100 @@
-import { products, categories } from "../data/products";
+import { products } from "../data/products.js";
 
-const DELAY = 300;
+export function getProducts({
+  category,
+  search,
+  minPrice,
+  maxPrice,
+  series,
+  storage,
+  color,
+} = {}) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      let filtered = [...products];
 
-function delay(data) {
-  return new Promise((resolve) => setTimeout(() => resolve(data), DELAY));
-}
+      if (category) {
+        filtered = filtered.filter(
+          (item) => item.category.toLowerCase() === category.toLowerCase()
+        );
+      }
 
-export function getCategories() {
-  return delay(categories);
-}
+      if (search) {
+        const query = search.toLowerCase().trim();
+        filtered = filtered.filter(
+          (item) =>
+            item.name.toLowerCase().includes(query) ||
+            item.tagline?.toLowerCase().includes(query) ||
+            item.category.toLowerCase().includes(query)
+        );
+      }
 
-export function getProducts({ category, search } = {}) {
-  let result = [...products];
+      const highestPrice =
+        filtered.length > 0
+          ? Math.max(...filtered.map((item) => item.price))
+          : 0;
 
-  if (category) {
-    result = result.filter((p) => p.category === category);
-  }
+      const availableColors = [
+        ...new Set(filtered.flatMap((item) => item.colors || [])),
+      ];
+      const availableStorage = [
+        ...new Set(
+          filtered.flatMap((item) =>
+            item.storageOptions ? item.storageOptions.map((s) => s.label) : []
+          )
+        ),
+      ];
 
-  if (search) {
-    const q = search.trim().toLowerCase();
-    result = result.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.tagline.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q),
-    );
-  }
+      if (minPrice !== undefined && minPrice !== "") {
+        filtered = filtered.filter((item) => item.price >= Number(minPrice));
+      }
+      if (maxPrice !== undefined && maxPrice !== "") {
+        filtered = filtered.filter((item) => item.price <= Number(maxPrice));
+      }
 
-  return delay(result);
+      if (series) {
+        filtered = filtered.filter((item) =>
+          item.name.toLowerCase().includes(series.toLowerCase())
+        );
+      }
+
+      if (storage) {
+        filtered = filtered.filter((item) =>
+          item.storageOptions?.some((s) => s.label === storage)
+        );
+      }
+
+      if (color) {
+        filtered = filtered.filter((item) =>
+          item.colors?.some((c) => c.toLowerCase() === color.toLowerCase())
+        );
+      }
+
+      resolve({
+        products: filtered,
+        totalCount: filtered.length,
+        highestPrice: highestPrice,
+        availableColors,
+        availableStorage,
+      });
+    }, 300);
+  });
 }
 
 export function getProductBySlug(slug) {
-  const product = products.find((p) => p.slug === slug);
-  return delay(product || null);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const product = products.find((p) => p.slug === slug);
+      resolve(product);
+    }, 300);
+  });
 }
 
 export function getFeaturedProducts() {
-  return delay(products.filter((p) => p.badge === "New").slice(0, 6));
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const featured = products.slice(0, 8);
+      resolve(featured);
+    }, 300);
+  });
 }
